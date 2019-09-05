@@ -20,11 +20,18 @@ let g = svg
   .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
 //Y-label - TBA
-//X-label - TBA
+//X-label
+g.append("text")
+  .attr("class", "y axis")
+  .attr("x", -(height / 2))
+  .attr("y", -40)
+  .attr("font-size", "10px")
+  .attr("text-anchor", "middle")
+  .attr("transform", "rotate(-90)")
+  .text("Life Expenctancy");
 
 d3.json("data/data.json")
   .then(function(data) {
-    console.log(data[1]);
     let cleanData = [];
     data.map(each => {
       cleanData.push(
@@ -37,7 +44,7 @@ d3.json("data/data.json")
       );
     });
 
-    console.log(cleanData[1]);
+    //Checking structure of data post-clean-up:
 
     //[Array]
 
@@ -45,26 +52,33 @@ d3.json("data/data.json")
     let allIncomes = cleanData.map(each =>
       each.map(eacher => eacher["income"])
     );
-
     let diffInIncomes = d3.extent([].concat(...allIncomes));
 
+    //x-scale:
     let x = d3
       .scaleLog()
       .base(10)
-      .domain([diffInIncomes[0], diffInIncomes[1]])
+      .domain(diffInIncomes)
       .range([0, width]);
 
+    //y-scale:
     let y = d3
       .scaleLinear()
       .domain([0, 100])
       .range([height, 0]);
 
-    let xAxisCall = d3.axisBottom(x);
+    //x-axis:
+    let xAxisCall = d3
+      .axisBottom(x)
+      .tickValues([400, 4000, 40000])
+      .tickFormat(d3.format("$"));
+
     g.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0, " + height + ")")
       .call(xAxisCall);
 
+    //y-axis:
     let yAxisCall = d3.axisLeft(y).tickFormat(function(d) {
       return d;
     });
@@ -72,11 +86,12 @@ d3.json("data/data.json")
       .attr("class", "y axis")
       .call(yAxisCall);
 
+    //Focus on Yr1 data only:
+    cleanData = cleanData[0];
+
     let circles = g
       .selectAll("circle")
-      .data(cleanData, function(d) {
-        return d.country;
-      })
+      .data(cleanData)
       .enter()
       .append("circle");
 
@@ -84,8 +99,8 @@ d3.json("data/data.json")
       .attr("cx", function(d) {
         return x(d.income);
       })
-      .attr("cy", function(data, i) {
-        return i;
+      .attr("cy", function(d) {
+        return y(d.life_exp);
       })
       .attr("r", 5)
       .style("fill", "blue");

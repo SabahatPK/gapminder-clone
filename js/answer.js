@@ -89,6 +89,7 @@ d3.json("data/data.json").then(function(data) {
   });
 
   console.log(formattedData[0]);
+  console.log(formattedData[0].country);
 
   // Run the code every 0.1 second
   d3.interval(function() {
