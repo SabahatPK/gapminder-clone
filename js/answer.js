@@ -72,11 +72,11 @@ g.append("g")
   .call(yAxisCall);
 
 d3.json("data/data.json").then(function(data) {
-  console.log(data[0]);
-
   // Clean data
-  const formattedData = data.map(function(year) {
-    return year["countries"]
+  const formattedData = data.map(function(eachItem) {
+    console.log(eachItem["countries"]);
+
+    return eachItem["countries"]
       .filter(function(country) {
         var dataExists = country.income && country.life_exp;
         return dataExists;
@@ -87,9 +87,6 @@ d3.json("data/data.json").then(function(data) {
         return country;
       });
   });
-
-  console.log(formattedData[0]);
-  console.log(formattedData[0].country);
 
   // Run the code every 0.1 second
   d3.interval(function() {
@@ -104,7 +101,7 @@ d3.json("data/data.json").then(function(data) {
 
 function update(data) {
   // Standard transition time for the visualization
-  var t = d3.transition().duration(100);
+  // var t = d3.transition().duration(100);
 
   // JOIN new data with old elements.
   var circles = g.selectAll("circle").data(data, function(d) {
